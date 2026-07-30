@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ForgeDash — Self-Hosted API Platform</title>
+  <meta name="description" content="Self-hosted all-in-one API platform with SearXNG, Qdrant, Honcho, Ollama, Camofox, and Obsidian behind a single gateway.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      line-height: 1.6;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+    header {
+      text-align: center; padding: 4rem 0 2rem;
+      border-bottom: 1px solid #21262d;
+    }
+    header h1 {
+      font-size: 3rem; font-weight: 800; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #f0883e 0%, #FFB300 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    header p { font-size: 1.15rem; color: #8b949e; margin-top: 0.75rem; max-width: 650px; margin-inline: auto; }
+    .badges { margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+    .badges img { height: 28px; }
+    .section { margin: 3rem 0; }
+    .section h2 {
+      font-size: 1.5rem; font-weight: 600; margin-bottom: 1.25rem;
+      color: #f0883e;
+    }
+    .features { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .feature {
+      background: #161b22; border: 1px solid #21262d; border-radius: 8px;
+      padding: 1.25rem; transition: border-color 0.2s;
+    }
+    .feature:hover { border-color: #f0883e; }
+    .feature h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .feature p { font-size: 0.875rem; color: #8b949e; }
+    .arch-container {
+      background: #161b22; border: 1px solid #21262d; border-radius: 8px;
+      padding: 2rem; overflow-x: auto;
+    }
+    .arch-container svg { width: 100%; height: auto; display: block; }
+    .stack-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;
+    }
+    .stack-item {
+      background: #161b22; border: 1px solid #21262d; border-radius: 6px;
+      padding: 1rem; text-align: center;
+    }
+    .stack-item .tag {
+      display: inline-block; font-size: 0.75rem; font-weight: 600;
+      background: #f0883e20; color: #f0883e; border: 1px solid #f0883e40;
+      padding: 0.15rem 0.6rem; border-radius: 4px; margin-bottom: 0.4rem;
+    }
+    .stack-item h4 { font-size: 1rem; }
+    .stack-item p { font-size: 0.8rem; color: #8b949e; }
+    footer {
+      text-align: center; padding: 2rem 0; color: #484f58;
+      border-top: 1px solid #21262d; margin-top: 3rem;
+    }
+    .btn {
+      display: inline-block; background: #f0883e; color: #0d1117;
+      font-weight: 600; padding: 0.7rem 1.8rem; border-radius: 6px;
+      text-decoration: none; font-size: 0.95rem; margin-top: 1.5rem;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #e07a2e; }
+    @media (max-width: 600px) {
+      header h1 { font-size: 2rem; }
+      .features { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚡ ForgeDash</h1>
+      <p>Self-hosted all-in-one API platform — deploy SearXNG, Qdrant, Honcho, Ollama, Camofox, and Obsidian behind a single gateway with auto-discoverable APIs, Tailscale mesh, and optional Cloudflare Tunnel.</p>
+      <div class="badges">
+        <img src="https://img.shields.io/badge/version-2.0.0-FFB300?style=flat-square" alt="Version">
+        <img src="https://img.shields.io/badge/license-MIT-FFB300?style=flat-square" alt="License">
+        <img src="https://img.shields.io/github/actions/workflow/status/OneByJorah/ForgeDash/ci.yml?style=flat-square&label=CI" alt="CI">
+        <img src="https://img.shields.io/badge/build-passing-FFB300?style=flat-square" alt="Build">
+      </div>
+      <a href="https://github.com/OneByJorah/ForgeDash" class="btn">View on GitHub</a>
+    </header>
+
+    <section class="section">
+      <h2>Features</h2>
+      <div class="features">
+        <div class="feature">
+          <h3>🔌 Auto-Discovery</h3>
+          <p>Agents hit <code>/api/v1/discover</code> to auto-configure to every local service — zero manual setup.</p>
+        </div>
+        <div class="feature">
+          <h3>🚀 One-Command Deploy</h3>
+          <p><code>sudo ./bootstrap.sh --auto</code> generates passwords, deploys the stack, and pulls models. Zero interaction.</p>
+        </div>
+        <div class="feature">
+          <h3>🤖 Local LLM (Ollama)</h3>
+          <p>Run entirely offline with local model inference. No API key needed.</p>
+        </div>
+        <div class="feature">
+          <h3>☁️ Cloud or Local</h3>
+          <p>Choose between local Ollama or cloud OpenRouter during setup.</p>
+        </div>
+        <div class="feature">
+          <h3>🔗 Tailscale Mesh</h3>
+          <p>Every service gets its own Tailscale identity for secure mesh networking.</p>
+        </div>
+        <div class="feature">
+          <h3>🌐 Cloudflare Tunnel</h3>
+          <p>Optional public HTTPS access without opening firewall ports.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Architecture</h2>
+      <div class="arch-container">
+        <svg viewBox="0 0 800 460" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a1a2e"/><stop offset="100%" stop-color="#16213e"/></linearGradient>
+            <linearGradient id="gw" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f0883e"/><stop offset="100%" stop-color="#FFB300"/></linearGradient>
+            <filter id="glow"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#f0883e" flood-opacity="0.4"/></filter>
+          </defs>
+          <rect width="800" height="460" rx="12" fill="url(#bg)"/>
+
+          <!-- Inbound arrow -->
+          <text x="400" y="30" fill="#8b949e" font-size="11" text-anchor="middle" font-family="monospace">🌐 Internet / Tailscale Mesh</text>
+          <line x1="400" y1="38" x2="400" y2="60" stroke="#f0883e" stroke-width="2" marker-end="url(#arrow)"/>
+          <polygon points="396,56 400,64 404,56" fill="#f0883e"/>
+
+          <!-- Gateway -->
+          <rect x="325" y="68" width="150" height="44" rx="22" fill="url(#gw)" filter="url(#glow)"/>
+          <text x="400" y="95" fill="#0d1117" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif">Gateway :9090</text>
+
+          <!-- Lines from gateway to services -->
+          <g stroke="#FFB300" stroke-width="1.5" fill="none" opacity="0.6">
+            <line x1="400" y1="112" x2="400" y2="140"/>
+            <!-- row 1 -->
+            <line x1="400" y1="140" x2="80" y2="140"/>
+            <line x1="400" y1="140" x2="720" y2="140"/>
+            <!-- row 2 -->
+            <line x1="400" y1="140" x2="200" y2="200"/>
+            <line x1="400" y1="140" x2="400" y2="200"/>
+            <line x1="400" y1="140" x2="600" y2="200"/>
+          </g>
+          <g fill="#fff" font-size="11" font-family="monospace">
+            <!-- Service boxes row 1 -->
+            <rect x="30" y="148" width="100" height="36" rx="6" fill="#1a1a2e" stroke="#FFB300" stroke-width="1.2"/>
+            <text x="80" y="170" fill="#FFB300" font-size="12" font-weight="600" text-anchor="middle" font-family="sans-serif">SearXNG :8080</text>
+            <rect x="670" y="148" width="100" height="36" rx="6" fill="#1a1a2e" stroke="#FFB300" stroke-width="1.2"/>
+            <text x="720" y="170" fill="#FFB300" font-size="12" font-weight="600" text-anchor="middle" font-family="sans-serif">Qdrant :6333</text>
+            <!-- Service boxes row 2 -->
+            <rect x="135" y="208" width="130" height="36" rx="6" fill="#1a1a2e" stroke="#FFB300" stroke-width="1.2"/>
+            <text x="200" y="230" fill="#FFB300" font-size="12" font-weight="600" text-anchor="middle" font-family="sans-serif">Honcho :8000</text>
+            <rect x="335" y="208" width="130" height="36" rx="6" fill="#1a1a2e" stroke="#10b981" stroke-width="1.2"/>
+            <text x="400" y="230" fill="#10b981" font-size="12" font-weight="600" text-anchor="middle" font-family="sans-serif">Ollama :11434</text>
+            <rect x="535" y="208" width="130" height="36" rx="6" fill="#1a1a2e" stroke="#FFB300" stroke-width="1.2"/>
+            <text x="600" y="230" fill="#FFB300" font-size="12" font-weight="600" text-anchor="middle" font-family="sans-serif">Camofox :9377</text>
+          </g>
+          <!-- Row 3 -->
+          <g stroke="#FFB300" stroke-width="1.5" opacity="0.6">
+            <line x1="200" y1="244" x2="200" y2="280"/>
+            <line x1="600" y1="244" x2="600" y2="280"/>
+            <line x1="400" y1="280" x2="200" y2="280"/>
+            <line x1="400" y1="280" x2="600" y2="280"/>
+          </g>
+          <g fill="#fff" font-size="11" font-family="monospace">
+            <rect x="135" y="288" width="130" height="36" rx="6" fill="#1a1a2e" stroke="#FFB300" stroke-width="1.2"/>
+            <text x="200" y="310" fill="#FFB300" font-size="12" font-weight="600" text-anchor="middle" font-family="sans-serif">Obsidian :8083</text>
+            <rect x="535" y="288" width="130" height="36" rx="6" fill="#1a1a2e" stroke="#FFB300" stroke-width="1.2"/>
+            <text x="600" y="310" fill="#FFB300" font-size="12" font-weight="600" text-anchor="middle" font-family="sans-serif">CloakBrowser :9222</text>
+          </g>
+
+          <!-- Honcho to Ollama arrow -->
+          <path d="M270 226 Q300 226 335 226" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5,3"/>
+          <polygon points="330,222 340,226 330,230" fill="#10b981"/>
+          <text x="300" y="218" fill="#10b981" font-size="10" text-anchor="middle" font-family="monospace">LLM inference</text>
+
+          <!-- Legend -->
+          <rect x="30" y="360" width="740" height="80" rx="8" fill="#161b22" stroke="#21262d" stroke-width="1"/>
+          <text x="50" y="385" fill="#8b949e" font-size="12" font-weight="600" font-family="sans-serif">Services</text>
+          <rect x="50" y="395" width="10" height="10" rx="2" fill="#FFB300"/>
+          <text x="68" y="404" fill="#8b949e" font-size="11" font-family="sans-serif">API / Search / Storage</text>
+          <rect x="200" y="395" width="10" height="10" rx="2" fill="#10b981"/>
+          <text x="218" y="404" fill="#8b949e" font-size="11" font-family="sans-serif">Local LLM (opt-in)</text>
+          <rect x="50" y="415" width="10" height="10" rx="2" fill="#f0883e"/>
+          <text x="68" y="424" fill="#8b949e" font-size="11" font-family="sans-serif">Gateway — single ingress / auto-discovery</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Tech Stack</h2>
+      <div class="stack-grid">
+        <div class="stack-item"><span class="tag">Gateway</span><h4>Python</h4><p>Auto-discovery API, health aggregation</p></div>
+        <div class="stack-item"><span class="tag">Search</span><h4>SearXNG</h4><p>Private meta-search engine</p></div>
+        <div class="stack-item"><span class="tag">Vector DB</span><h4>Qdrant</h4><p>Semantic memory &amp; embeddings</p></div>
+        <div class="stack-item"><span class="tag">Memory</span><h4>Honcho</h4><p>AI session &amp; memory management</p></div>
+        <div class="stack-item"><span class="tag">LLM</span><h4>Ollama</h4><p>Local model inference</p></div>
+        <div class="stack-item"><span class="tag">Browser</span><h4>Camofox</h4><p>Secure browser automation</p></div>
+        <div class="stack-item"><span class="tag">Notes</span><h4>Obsidian</h4><p>Knowledge management</p></div>
+        <div class="stack-item"><span class="tag">Deploy</span><h4>Docker</h4><p>Compose-based orchestration</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Quick Start</h2>
+      <pre style="background:#161b22;border:1px solid #21262d;border-radius:6px;padding:1rem;overflow-x:auto;font-size:0.85rem;color:#c9d1d9;"><code>git clone https://github.com/OneByJorah/ForgeDash.git
+cd ForgeDash
+sudo ./bootstrap.sh --auto</code></pre>
+      <p style="color:#8b949e;font-size:0.9rem;margin-top:0.5rem;">Opens at <strong>http://localhost:9090</strong> — dashboard + agent auto-discovery.</p>
+    </section>
+
+    <footer>
+      <p>MIT License &mdash; JorahOne LLC</p>
+    </footer>
+  </div>
+</body>
+</html>
