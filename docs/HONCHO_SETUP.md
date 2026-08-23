@@ -27,14 +27,14 @@ Honcho provides long-term memory/workspace context for Hermes Agent.
    git submodule update --init vendor/honcho
    ```
 
-4. Start Honcho alongside StackDeploy:
+4. Start Honcho alongside ForgeDash:
    ```bash
    docker compose -f docker-compose.yml -f docker-compose.honcho.yml up -d
    ```
 
 5. Verify Honcho is running:
    ```bash
-   curl -s http://localhost:8000/api/v1/health  # or check /openapi.json
+   curl -s http://localhost:8081/api/v1/health  # or check /openapi.json
    ```
 
 6. Configure Hermes to use local Honcho:
@@ -42,7 +42,7 @@ Honcho provides long-term memory/workspace context for Hermes Agent.
    # in ~/.hermes/config.yaml (or profile config)
    honcho:
      enabled: true
-     base_url: "http://localhost:8000"
+     base_url: "http://localhost:8081"
      workspace: hermes-main
    ```
 

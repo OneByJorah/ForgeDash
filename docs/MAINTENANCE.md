@@ -6,14 +6,22 @@
 docker compose restart
 ```
 
-## Update model
+## Update services
 
 ```bash
-docker compose up -d llama-server
+docker compose pull
+docker compose up -d
 ```
 
 ## Backup Honcho memory
 
+Honcho data lives in the `honcho-data` Docker volume (and `honcho-postgres` / `honcho-redis` for the main-stack variant). Back up with:
+
 ```bash
-tar czf honcho-backup.tgz /home/j1admin/docker/j1-stack-deploy/honcho
+docker compose stop honcho
+docker run --rm -v forgedash_honcho-data:/data -v "$PWD":/backup alpine \
+  tar czf /backup/honcho-backup.tgz -C /data .
+docker compose start honcho
 ```
+
+Adjust the volume name prefix if your compose project name differs (`docker volume ls | grep honcho`).

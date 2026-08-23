@@ -137,8 +137,6 @@ services:
 
 volumes:
   searxng-data:
-  camofox-data:
-  obsidian-vault:
   qdrant-data:
   honcho-postgres:
   honcho-redis:

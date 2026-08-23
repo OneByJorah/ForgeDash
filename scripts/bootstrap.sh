@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== StackDeploy Bootstrap ==="
+echo "=== ForgeDash Bootstrap ==="
 echo ""
+
+# Auto-generate SearXNG secret_key if placeholder present
+if grep -q "REPLACE_WITH_GENERATED_SECRET_KEY" searxng/settings.yml; then
+    NEW_KEY=$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')
+    sed -i "s/REPLACE_WITH_GENERATED_SECRET_KEY/$NEW_KEY/" searxng/settings.yml
+    echo "🔑 Generated SearXNG secret_key"
+fi
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo "Usage: $0"
+    echo "  Copies .env.example to .env (if missing), pulls images, starts the stack, runs healthcheck."
+    exit 0
+fi
 
 # Check Docker
 if ! command -v docker &> /dev/null; then
@@ -43,10 +56,9 @@ echo "🏥 Running health check..."
 ./scripts/healthcheck.sh localhost
 
 echo ""
-echo "✅ StackDeploy is ready!"
+echo "✅ ForgeDash is ready!"
 echo ""
 echo "Access points:"
-echo "  Portainer (Admin):  http://localhost:9000"
 echo "  SearXNG:            http://localhost:8080"
 echo "  Camofox:            http://localhost:9377"
 echo "  CloakBrowser:       http://localhost:9222"

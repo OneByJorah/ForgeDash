@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SERVER="${1:-localhost}"
-printf "StackDeploy Healthcheck\nTarget: %s\n\n" "$SERVER"
+printf "ForgeDash Healthcheck\nTarget: %s\n\n" "$SERVER"
 
 check_service() {
     local name="$1"
@@ -36,10 +36,6 @@ check_service "Qdrant" "http://$SERVER:6333/readyz" "ready" || FAILED=1
 echo ""
 echo "Memory Layer:"
 check_service "Honcho API" "http://$SERVER:8081/healthz" "" || FAILED=1
-
-echo ""
-echo "Admin:"
-check_service "Portainer" "http://$SERVER:9000/" "" || FAILED=1
 
 echo ""
 if [[ $FAILED -eq 0 ]]; then
