@@ -20,10 +20,10 @@ jobs:
       - name: Run hadolint
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: docker-compose.yml
+          dockerfile: gateway/Dockerfile
 
       - name: Run shellcheck
-        uses: ludeeus/action-shellcheck@v2.0.0
+        uses: ludeeus/action-shellcheck@2.0.0
         with:
           scandir: './scripts'
           severity: warning
