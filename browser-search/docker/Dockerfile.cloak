@@ -1,0 +1,21 @@
+# CloakBrowser — stealth Chromium exposing CDP on :9222.
+# Hermes/agents connect via CDP (http://<host>:9222); the cloakbrowser CLI
+# scripts in browser-search/scripts/cloak run against this endpoint.
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        chromium \
+        socat \
+        ca-certificates \
+        fonts-liberation \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CLOAK_HEADLESS=true
+ENV HOME=/tmp
+
+COPY docker/entrypoint-cloak.sh /usr/local/bin/entrypoint-cloak.sh
+RUN chmod 0755 /usr/local/bin/entrypoint-cloak.sh
+
+EXPOSE 9222
+
+ENTRYPOINT ["/usr/local/bin/entrypoint-cloak.sh"]

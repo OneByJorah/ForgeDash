@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SERVER="${1:-localhost}"
-printf "StackDeploy Healthcheck\nTarget: %s\n\n" "$SERVER"
+printf "ForgeDash Healthcheck\nTarget: %s\n\n" "$SERVER"
 
 check_service() {
     local name="$1"
@@ -35,11 +35,13 @@ check_service "Qdrant" "http://$SERVER:6333/readyz" "ready" || FAILED=1
 
 echo ""
 echo "Memory Layer:"
-check_service "Honcho API" "http://$SERVER:8081/healthz" "" || FAILED=1
-
-echo ""
-echo "Admin:"
-check_service "Portainer" "http://$SERVER:9000/" "" || FAILED=1
+# Honcho runs from a locally-built image (see docker-compose.honcho.yml);
+# set SKIP_HONCHO=1 in environments where it is not started (e.g. CI).
+if [[ "${SKIP_HONCHO:-0}" != "1" ]]; then
+    check_service "Honcho API" "http://$SERVER:8081/api/v1/health" "" || FAILED=1
+else
+    echo "  ⏭️  Honcho API (skipped via SKIP_HONCHO=1)"
+fi
 
 echo ""
 if [[ $FAILED -eq 0 ]]; then

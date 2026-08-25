@@ -1,14 +1,14 @@
 """
-StackDeploy Dashboard — Gateway API
+ForgeDash — Gateway API
 
 Single ingress point for all backend services. Provides:
   - /onboard    → HTML onboarding page for human operators
   - /api/v1/discover → JSON endpoint for agents to auto-configure
   - /api/v1/health   → Aggregated health status of all services
-  - /api/v1/config   → Update configuration (requires admin auth)
 """
 
 import os
+import secrets
 from typing import Optional
 
 import httpx
@@ -17,7 +17,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 app = FastAPI(
-    title="StackDeploy Dashboard API",
+    title="ForgeDash API",
     version="2.0.0",
     description="Self-hosted all-in-one API platform — auto-discover services, check health, and configure agents.",
 )
@@ -46,9 +46,9 @@ SERVICE_REGISTRY = {
     },
     "honcho": {
         "host": "honcho",
-        "port": 8000,
+        "port": 8081,
         "description": "AI memory & session management",
-        "health_endpoint": "/health",
+        "health_endpoint": "/api/v1/health",
     },
     "camofox": {
         "host": "camofox-browser",
@@ -77,7 +77,7 @@ SERVICE_REGISTRY = {
     "gateway": {
         "host": "gateway",
         "port": 9090,
-        "description": "StackDeploy Gateway API (this service)",
+        "description": "ForgeDash Gateway API (this service)",
         "health_endpoint": "/health",
     },
 }
@@ -91,10 +91,9 @@ def verify_admin(credentials: Optional[HTTPBasicCredentials] = Depends(security)
             detail="Authentication required",
             headers={"WWW-Authenticate": "Basic"},
         )
-    if (
-        credentials.username != GATEWAY_USERNAME
-        or credentials.password != GATEWAY_PASSWORD
-    ):
+    if not secrets.compare_digest(
+        credentials.username, GATEWAY_USERNAME
+    ) or not secrets.compare_digest(credentials.password, GATEWAY_PASSWORD):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
@@ -109,10 +108,9 @@ def verify_admin_optional(
     """Returns username if authenticated, None if no auth provided."""
     if credentials is None:
         return None
-    if (
-        credentials.username == GATEWAY_USERNAME
-        and credentials.password == GATEWAY_PASSWORD
-    ):
+    if secrets.compare_digest(
+        credentials.username, GATEWAY_USERNAME
+    ) and secrets.compare_digest(credentials.password, GATEWAY_PASSWORD):
         return credentials.username
     return None
 
@@ -143,7 +141,7 @@ async def health():
     """Basic health check for the gateway itself."""
     return {
         "status": "OPERATIONAL",
-        "service": "StackDeploy Dashboard Gateway",
+        "service": "ForgeDash Gateway",
         "version": "2.0.0",
     }
 
@@ -171,8 +169,8 @@ async def discover(credentials: Optional[str] = Depends(verify_admin_optional)):
     Returns all available services with their connection details.
     Agents hit this to auto-configure themselves to the local API stack.
 
-    Read-only access is available without authentication for the onboarding dashboard.
-    Authentication is required for agent configuration and write operations.
+    Read-only: accessible without authentication so the onboarding
+    dashboard can render. Exposes no credentials or write operations.
     """
     results = []
     for name, svc in SERVICE_REGISTRY.items():
@@ -183,7 +181,7 @@ async def discover(credentials: Optional[str] = Depends(verify_admin_optional)):
     tailscale_hostname = os.getenv("TS_CERT_DOMAIN", "")
 
     return {
-        "platform": "StackDeploy Dashboard",
+        "platform": "ForgeDash",
         "version": "2.0.0",
         "tailnet_hostname": tailscale_hostname,
         "cloudflare_domain": os.getenv("CLOUDFLARE_TUNNEL_DOMAIN", ""),
@@ -201,7 +199,7 @@ ONBOARDING_HTML = """
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StackDeploy Dashboard — Onboarding</title>
+<title>ForgeDash — Onboarding</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'JetBrains Mono', 'Courier New', monospace; background: #0a0e1a; color: #e2e8f0; min-height: 100vh; }
@@ -240,7 +238,7 @@ body { font-family: 'JetBrains Mono', 'Courier New', monospace; background: #0a0
 <body>
 <div class="container">
   <div class="header">
-    <h1>⛭ StackDeploy Dashboard</h1>
+    <h1>⛭ ForgeDash</h1>
     <p>Self-hosted API platform — auto-discover all services</p>
     <div id="status-badge" class="badge badge-ok">● Checking...</div>
   </div>
@@ -267,7 +265,7 @@ body { font-family: 'JetBrains Mono', 'Courier New', monospace; background: #0a0
   <div id="discover-json" class="discover-json">Loading...</div>
 
   <div class="footer">
-    JorahOne LLC · StackDeploy Dashboard v2.0
+    JorahOne LLC · ForgeDash v2.0
   </div>
 </div>
 
@@ -291,25 +289,35 @@ async function refreshStatus() {
       badge.className = 'badge badge-err';
     }
 
-    // Render services
-    let html = '';
+    // Render services (DOM-built; never inject API strings via innerHTML)
+    const grid = document.getElementById('service-grid');
+    grid.textContent = '';
     data.services.forEach(s => {
-      const statusClass = s.healthy ? 'status-up' : 'status-down';
-      const statusText = s.healthy ? '● Online' : '○ Offline';
-      html += `
-        <div class="service-card">
-          <div class="service-info">
-            <div class="name">${s.name}</div>
-            <div class="desc">${s.description}</div>
-            <div class="service-url">${s.internal_url}</div>
-          </div>
-          <div>
-            <span class="service-status ${statusClass}">${statusText}</span>
-          </div>
-        </div>
-      `;
+      const card = document.createElement('div');
+      card.className = 'service-card';
+
+      const info = document.createElement('div');
+      info.className = 'service-info';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'name';
+      nameEl.textContent = s.name;
+      const descEl = document.createElement('div');
+      descEl.className = 'desc';
+      descEl.textContent = s.description;
+      const urlEl = document.createElement('div');
+      urlEl.className = 'service-url';
+      urlEl.textContent = s.internal_url;
+      info.append(nameEl, descEl, urlEl);
+
+      const statusWrap = document.createElement('div');
+      const statusSpan = document.createElement('span');
+      statusSpan.className = 'service-status ' + (s.healthy ? 'status-up' : 'status-down');
+      statusSpan.textContent = s.healthy ? '● Online' : '○ Offline';
+      statusWrap.appendChild(statusSpan);
+
+      card.append(info, statusWrap);
+      grid.appendChild(card);
     });
-    document.getElementById('service-grid').innerHTML = html;
 
     // Show discover JSON
     document.getElementById('discover-json').textContent = JSON.stringify(data, null, 2);
