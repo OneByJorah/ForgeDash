@@ -35,7 +35,13 @@ check_service "Qdrant" "http://$SERVER:6333/readyz" "ready" || FAILED=1
 
 echo ""
 echo "Memory Layer:"
-check_service "Honcho API" "http://$SERVER:8081/api/v1/health" "" || FAILED=1
+# Honcho runs from a locally-built image (see docker-compose.honcho.yml);
+# set SKIP_HONCHO=1 in environments where it is not started (e.g. CI).
+if [[ "${SKIP_HONCHO:-0}" != "1" ]]; then
+    check_service "Honcho API" "http://$SERVER:8081/api/v1/health" "" || FAILED=1
+else
+    echo "  ⏭️  Honcho API (skipped via SKIP_HONCHO=1)"
+fi
 
 echo ""
 if [[ $FAILED -eq 0 ]]; then

@@ -63,13 +63,14 @@ jobs:
           echo "HONCHO_DB_PASSWORD=test123" >> .env
           echo "CAMOFOX_API_KEY=test" >> .env
           echo "CAMOFOX_ADMIN_KEY=test" >> .env
-          docker compose up -d
+          # honcho image is local-build-only (vendor submodule) — not pullable in CI
+          docker compose up -d searxng qdrant obsidian camofox cloakbrowser
 
       - name: Wait for services
         run: sleep 30
 
       - name: Run health check
-        run: ./scripts/healthcheck.sh localhost
+        run: SKIP_HONCHO=1 ./scripts/healthcheck.sh localhost
 
       - name: Show container status
         run: docker compose ps
