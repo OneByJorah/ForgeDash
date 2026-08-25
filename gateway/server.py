@@ -91,10 +91,9 @@ def verify_admin(credentials: Optional[HTTPBasicCredentials] = Depends(security)
             detail="Authentication required",
             headers={"WWW-Authenticate": "Basic"},
         )
-    if (
-        not secrets.compare_digest(credentials.username, GATEWAY_USERNAME)
-        or not secrets.compare_digest(credentials.password, GATEWAY_PASSWORD)
-    ):
+    if not secrets.compare_digest(
+        credentials.username, GATEWAY_USERNAME
+    ) or not secrets.compare_digest(credentials.password, GATEWAY_PASSWORD):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials",
@@ -109,10 +108,9 @@ def verify_admin_optional(
     """Returns username if authenticated, None if no auth provided."""
     if credentials is None:
         return None
-    if (
-        secrets.compare_digest(credentials.username, GATEWAY_USERNAME)
-        and secrets.compare_digest(credentials.password, GATEWAY_PASSWORD)
-    ):
+    if secrets.compare_digest(
+        credentials.username, GATEWAY_USERNAME
+    ) and secrets.compare_digest(credentials.password, GATEWAY_PASSWORD):
         return credentials.username
     return None
 
