@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV CLOAK_HEADLESS=true
 ENV HOME=/tmp
 
-COPY entrypoint-cloak.sh /usr/local/bin/entrypoint-cloak.sh
+COPY docker/entrypoint-cloak.sh /usr/local/bin/entrypoint-cloak.sh
 RUN chmod 0755 /usr/local/bin/entrypoint-cloak.sh
 
 EXPOSE 9222
