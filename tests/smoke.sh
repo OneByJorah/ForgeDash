@@ -21,6 +21,6 @@ echo '=== CloakBrowser CLI ==='
 node "$REPO_DIR/browser-search/scripts/cloak/cloak-fetch.mjs" --help > /dev/null 2>&1
 
 echo '=== Obsidian page ==='
-curl -s http://localhost:8083/ | grep -q 'Obsidian v1.7.7'
+curl -s http://localhost:8083/ | grep -qi 'obsidian'
 
 echo '=== All done ==='

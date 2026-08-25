@@ -55,12 +55,12 @@ Honcho provides long-term memory/workspace context for Hermes Agent.
 
 - The first build will compile the Honcho image (requires pulling dependencies). This may take a few minutes.
 - Honcho uses PostgreSQL with pgvector and Redis, both included in `docker-compose.honcho.yml`.
-- All data persists in Docker volumes: `honcho-pgdata` and `honcho-redis-data`.
+- All data persists in Docker volumes: `honcho-postgres`, `honcho-redis`, and `honcho-data`.
 - Configuration (`config.toml`) is mounted read-only at runtime. Adjust `honcho/config.toml` if needed.
 - For more details, see the upstream repo: https://github.com/plastic-labs/honcho
 
 ## Stopping Honcho
 
 ```bash
-docker compose -f docker-compose.honcho.yml down
+docker compose -f docker-compose.yml -f docker-compose.honcho.yml down
 ```

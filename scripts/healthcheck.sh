@@ -35,7 +35,7 @@ check_service "Qdrant" "http://$SERVER:6333/readyz" "ready" || FAILED=1
 
 echo ""
 echo "Memory Layer:"
-check_service "Honcho API" "http://$SERVER:8081/healthz" "" || FAILED=1
+check_service "Honcho API" "http://$SERVER:8081/api/v1/health" "" || FAILED=1
 
 echo ""
 if [[ $FAILED -eq 0 ]]; then

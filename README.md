@@ -63,17 +63,17 @@ The gateway (`gateway/server.py`, FastAPI) runs standalone — build/run its Doc
 Agents can auto-configure to the API stack by hitting the discover endpoint:
 
 ```bash
-curl -u admin:your-password http://localhost:9090/api/v1/discover
+curl http://localhost:9090/api/v1/discover
 ```
 
-Response includes each service's internal URL, health status, and description. The onboarding page at **http://localhost:9090/onboard** shows a human-friendly dashboard.
+Response includes each service's internal URL, health status, and description. The endpoint is read-only and needs no auth (it exposes no credentials); the onboarding page at **http://localhost:9090/onboard** shows a human-friendly dashboard.
 
 ### Endpoints
 
 | Endpoint | Description |
 |----------|-------------|
 | `/` or `/onboard` | Human-friendly onboarding dashboard |
-| `/api/v1/discover` | Agent auto-discovery JSON (auth required) |
+| `/api/v1/discover` | Agent auto-discovery JSON (read-only, no auth) |
 | `/api/v1/health` | Aggregated health status of all services |
 
 ## Services

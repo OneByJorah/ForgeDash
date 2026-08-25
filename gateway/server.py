@@ -8,6 +8,7 @@ Single ingress point for all backend services. Provides:
 """
 
 import os
+import secrets
 from typing import Optional
 
 import httpx
@@ -47,7 +48,7 @@ SERVICE_REGISTRY = {
         "host": "honcho",
         "port": 8081,
         "description": "AI memory & session management",
-        "health_endpoint": "/health",
+        "health_endpoint": "/api/v1/health",
     },
     "camofox": {
         "host": "camofox-browser",
@@ -91,8 +92,8 @@ def verify_admin(credentials: Optional[HTTPBasicCredentials] = Depends(security)
             headers={"WWW-Authenticate": "Basic"},
         )
     if (
-        credentials.username != GATEWAY_USERNAME
-        or credentials.password != GATEWAY_PASSWORD
+        not secrets.compare_digest(credentials.username, GATEWAY_USERNAME)
+        or not secrets.compare_digest(credentials.password, GATEWAY_PASSWORD)
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -109,8 +110,8 @@ def verify_admin_optional(
     if credentials is None:
         return None
     if (
-        credentials.username == GATEWAY_USERNAME
-        and credentials.password == GATEWAY_PASSWORD
+        secrets.compare_digest(credentials.username, GATEWAY_USERNAME)
+        and secrets.compare_digest(credentials.password, GATEWAY_PASSWORD)
     ):
         return credentials.username
     return None
@@ -170,8 +171,8 @@ async def discover(credentials: Optional[str] = Depends(verify_admin_optional)):
     Returns all available services with their connection details.
     Agents hit this to auto-configure themselves to the local API stack.
 
-    Read-only access is available without authentication for the onboarding dashboard.
-    Authentication is required for agent configuration and write operations.
+    Read-only: accessible without authentication so the onboarding
+    dashboard can render. Exposes no credentials or write operations.
     """
     results = []
     for name, svc in SERVICE_REGISTRY.items():
