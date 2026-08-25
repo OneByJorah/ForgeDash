@@ -69,6 +69,12 @@ jobs:
       - name: Wait for services
         run: sleep 30
 
+      - name: Diagnostics
+        if: always()
+        run: |
+          docker compose ps -a
+          docker logs cloak-browser 2>&1 | tail -30 || true
+
       - name: Run health check
         run: SKIP_HONCHO=1 ./scripts/healthcheck.sh localhost
 
