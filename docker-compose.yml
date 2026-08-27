@@ -84,7 +84,7 @@ services:
   honcho-redis:
     image: redis:8.2
     container_name: honcho-redis
-    command: ["redis-server", "--bind", "0.0.0.0"]
+    command: ["redis-server", "--bind", "<ip-address>"]
     volumes:
       - honcho-redis:/data
     healthcheck:
