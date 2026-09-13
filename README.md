@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # StackDeploy
 
 **Version:** v2.0  
@@ -24,9 +25,31 @@
 - [Hermes Integration](#hermes-integration)
 - [License](#license)
 - [Author](#author)
+=======
+<div align="center">
+
+# ForgeDash
+
+**Self-hosted all-in-one API platform** — SearXNG, Qdrant, Honcho, Camofox, Obsidian behind unified Nginx gateway.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
+[![CI](https://github.com/OneByJorah/ForgeDash/actions/workflows/ci.yml/badge.svg)](https://github.com/OneByJorah/ForgeDash/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-2.0.0-FFB300?style=flat-square)]()
+[![Docker](https://img.shields.io/badge/Docker_Compose-Ready-2496ED?logo=docker&logoColor=fff)](https://docker.com)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen)](CONTRIBUTING.md)
+
+</div>
 
 ---
 
+## What It Does
+
+ForgeDash is a **unified API gateway** that deploys SearXNG, Qdrant, Honcho, Camofox, Obsidian, and CloakBrowser behind a single Nginx reverse proxy with auto-discoverable APIs. One command gives you a complete self-hosted AI infrastructure.
+>>>>>>> e08c6d3 (docs: overhaul README with badges, service table, and features)
+
+---
+
+<<<<<<< HEAD
 ## Overview
 
 StackDeploy is a **unified, production-ready Docker Compose deployment** that consolidates self-hosted web search, long-term memory, browser automation, vector storage, and Obsidian note-taking under a single IP with centralized management. Designed to run on consumer hardware with Tailscale networking, exposing everything through direct ports.
@@ -436,3 +459,39 @@ Built by **Jhonattan L. Jimenez** (J1admin).
 - GitHub: [@OneByJorah](https://github.com/OneByJorah)
 - Tailscale: `ollama` (100.92.150.99)
 - Primary GPU: RTX 3060 12GB
+=======
+```bash
+git clone https://github.com/OneByJorah/ForgeDash.git
+cd ForgeDash
+cp .env.example .env
+./bootstrap.sh
+```
+
+## Features
+
+- **Unified Gateway** — Single Nginx reverse proxy for all services
+- **Auto-Discoverable APIs** — Service registry with health endpoints
+- **Private Search** — SearXNG with 100+ providers
+- **Vector Storage** — Qdrant for embeddings
+- **Agent Memory** — Honcho for persistent memory
+- **Browser Automation** — Camofox + CloakBrowser stealth
+- **Obsidian Vault** — Browser-based note management
+
+## Services
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| **SearXNG** | /search | Private web search |
+| **Qdrant** | /qdrant | Vector database |
+| **Honcho** | /honcho | Agent memory |
+| **Camofox** | /browser | Stealth browser |
+| **Obsidian** | /vault | Note vault |
+
+## License
+
+MIT © Jhonattan L. Jimenez (OneByJorah)
+
+---
+
+<p align="center">Built with 🌴 by <a href="https://github.com/OneByJorah">OneByJorah</a> · <a href="https://jorahone.com">jorahone.com</a></p>
+>>>>>>> e08c6d3 (docs: overhaul README with badges, service table, and features)
