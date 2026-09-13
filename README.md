@@ -1,101 +1,61 @@
 # ForgeDash
 
-Self-hosted all-in-one API platform — deploy SearXNG, Qdrant, Honcho, Camofox, Obsidian, and CloakBrowser behind a single gateway with auto-discoverable APIs.
+> A self-hosted all-in-one API platform — SearXNG, Qdrant, Honcho, Camofox, Obsidian, and CloakBrowser behind a single FastAPI gateway with auto-discoverable endpoints.
 
-![Dashboard](docs/screenshots/dashboard.png)
+[![License](https://img.shields.io/github/license/OneByJorah/ForgeDash?style=for-the-badge&color=FFB300&labelColor=0a0a09)](https://github.com/OneByJorah/ForgeDash)
+[![Top Language](https://img.shields.io/github/languages/top/OneByJorah/ForgeDash?style=for-the-badge&color=FFB300&labelColor=0a0a09)](https://github.com/OneByJorah/ForgeDash)
+[![Stars](https://img.shields.io/github/stars/OneByJorah/ForgeDash?style=for-the-badge&color=FFB300&labelColor=0a0a09)](https://github.com/OneByJorah/ForgeDash/stargazers)
+[![Last Commit](https://img.shields.io/github/last-commit/OneByJorah/ForgeDash?style=for-the-badge&color=FFB300&labelColor=0a0a09)](https://github.com/OneByJorah/ForgeDash/commits)
+[![CI](https://img.shields.io/github/actions/workflow/status/OneByJorah/ForgeDash/ci.yml?style=for-the-badge&color=FFB300&labelColor=0a0a09)](https://github.com/OneByJorah/ForgeDash/actions)
 
-[![CI](https://github.com/OneByJorah/ForgeDash/actions/workflows/ci.yml/badge.svg)](https://github.com/OneByJorah/ForgeDash/actions/workflows/ci.yml)
+![ForgeDash dashboard](docs/screenshots/dashboard.png)
 
-![Version](https://img.shields.io/badge/version-2.0.0-FFB300?style=flat-square)
-![License](https://img.shields.io/badge/license-MIT-FFB300?style=flat-square)
-![Build](https://img.shields.io/badge/build-passing-FFB300?style=flat-square)
+## What This Is
+
+ForgeDash is the control plane for a self-hosted agent stack: a FastAPI gateway sits in front of six backend services and exposes a read-only discovery endpoint so agents can auto-configure against the whole stack with one call. Humans get an onboarding dashboard at `/onboard`; agents get JSON at `/api/v1/discover`. Backend services are deployed by the included Compose file; the gateway runs standalone or from `gateway/Dockerfile`.
 
 ## Quick Start
 
 ```bash
 git clone https://github.com/OneByJorah/ForgeDash.git
 cd ForgeDash
-cp .env.example .env      # then edit values (or let bootstrap do it)
+cp .env.example .env      # edit values (or let bootstrap do it)
 sudo ./bootstrap.sh       # init + docker compose up -d + smoke test
 ```
 
-`bootstrap.sh` takes no flags — it runs `scripts/init-honcho.sh` and `scripts/init-obsidian.sh`, then `docker compose up -d`, installs the `browser-search` Node deps, and runs `tests/smoke.sh`.
+`bootstrap.sh` runs the Honcho and Obsidian init scripts, starts the stack, installs `browser-search` Node deps, and executes `tests/smoke.sh`.
 
-Alternatively, `scripts/bootstrap.sh` generates a SearXNG `secret_key` (if the placeholder in `searxng/settings.yml` is still present), copies `.env.example → .env`, pulls images, starts services, and runs `scripts/healthcheck.sh`.
+## Features
+
+- **Unified gateway** — FastAPI server on `:9090` aggregating health and connection info for every service.
+- **Agent auto-discovery** — `curl http://localhost:9090/api/v1/discover` returns each service's internal URL, health status, and description; read-only, no auth, no credentials leaked.
+- **Human onboarding page** — `http://localhost:9090/onboard` shows a service dashboard for operators.
+- **Aggregated health** — `/api/v1/health` probes all registered services and reports a combined status.
+- **Full backend stack** — SearXNG (search, `:8080`), Qdrant (vectors, `:6333`), Honcho (agent memory, `:8081`), Camofox (browser automation, `:9377`), Obsidian (notes, `:8083`), CloakBrowser (protected sites, `:9222`).
+- **One-shot bootstrap** — `bootstrap.sh` handles env scaffolding, service init, image pulls, and smoke tests.
 
 ## Architecture
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables':{'primaryColor':'#0a0a09','primaryTextColor':'#FFB300','lineColor':'#FFB300'}}}%%
 graph TB
-    subgraph Docker_Compose
-        C[SearXNG :8080]
-        D[Qdrant :6333]
-        E[Honcho :8081]
-        F[Camofox :9377]
-        G[Obsidian :8083]
-        H[CloakBrowser :9222]
-    end
-    subgraph Standalone
-        B[Gateway :9090]
-    end
-
-    B -->|Discover API| C
-    B -->|Discover API| D
-    B -->|Discover API| E
-    B -->|Discover API| F
-    B -->|Discover API| G
-    B -->|Discover API| H
-
-    style B fill:#1a1a2e,stroke:#FFB300,color:#fff
-    style C fill:#1a1a2e,stroke:#FFB300,color:#fff
-    style D fill:#1a1a2e,stroke:#FFB300,color:#fff
-    style E fill:#1a1a2e,stroke:#FFB300,color:#fff
+    G[Gateway :9090<br/>FastAPI]
+    G -->|discover / health| C[SearXNG :8080]
+    G -->|discover / health| D[Qdrant :6333]
+    G -->|discover / health| E[Honcho :8081]
+    G -->|discover / health| F[Camofox :9377]
+    G -->|discover / health| H[Obsidian :8083]
+    G -->|discover / health| I[CloakBrowser :9222]
 ```
 
-ForgeDash is the control-plane island in the JorahOne archipelago — the single ingress through which agents discover and connect to every service.
+## Stack
 
-## Gateway
-
-The gateway (`gateway/server.py`, FastAPI) runs standalone — build/run its Docker image separately (`gateway/Dockerfile`) if you want it containerized. By default it listens on port `9090` and aggregates health + connection info for the backend services.
-
-## Agent Onboarding
-
-Agents can auto-configure to the API stack by hitting the discover endpoint:
-
-```bash
-curl http://localhost:9090/api/v1/discover
-```
-
-Response includes each service's internal URL, health status, and description. The endpoint is read-only and needs no auth (it exposes no credentials); the onboarding page at **http://localhost:9090/onboard** shows a human-friendly dashboard.
-
-### Endpoints
-
-| Endpoint | Description |
-|----------|-------------|
-| `/` or `/onboard` | Human-friendly onboarding dashboard |
-| `/api/v1/discover` | Agent auto-discovery JSON (read-only, no auth) |
-| `/api/v1/health` | Aggregated health status of all services |
-
-## Services
-
-| Service | Internal URL | Host port | Description |
-|---------|-------------|-----------|-------------|
-| SearXNG | `http://searxng:8080` | 8080 | Private meta-search engine |
-| Qdrant | `http://qdrant:6333` | 6333 | Vector database for semantic memory |
-| Honcho | `http://honcho:8081` | 8081 | AI memory & session management |
-| Camofox | `http://camofox-browser:9377` | 9377 | Browser automation |
-| Obsidian | `http://obsidian:8080` | 8083 | Notes & knowledge management |
-| CloakBrowser | `http://cloak-browser:9222` | 9222 | Protected browser (built from `./browser-search`) |
-
-Honcho runs from `docker-compose.yml` (prebuilt image, port 8081). To build Honcho from the vendored source instead, use `docker compose -f docker-compose.yml -f docker-compose.honcho.yml up -d` — see `docs/HONCHO_SETUP.md`.
+FastAPI · Docker Compose · SearXNG · Qdrant · Honcho (PostgreSQL + pgvector + Redis) · Camofox · Obsidian (sytone/obsidian-remote) · CloakBrowser
 
 ## Contributing
 
-1. Fork the repo
-2. Create a branch: `fix/your-fix` or `feature/your-feature`
-3. Open a PR against `master`
-4. Response time: PRs are read within 48 hours
+Fork the repo, create a `fix/` or `feature/` branch, and open a PR against `master` — see [CONTRIBUTING.md](CONTRIBUTING.md). [Open an issue](https://github.com/OneByJorah/ForgeDash/issues) for bugs or ideas.
 
 ## License
 
-MIT — JorahOne LLC
+MIT — see [LICENSE](LICENSE).
